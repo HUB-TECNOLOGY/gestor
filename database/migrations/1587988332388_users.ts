@@ -28,6 +28,7 @@ export default class UsersSchema extends BaseSchema {
           'SUPERVISOR',
           'MANAGER_ASSISTANT',
           'MANAGER',
+          'ADMIN',
         ])
         .defaultTo('CLIENT')
 

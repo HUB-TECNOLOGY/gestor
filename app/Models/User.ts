@@ -52,7 +52,13 @@ export default class User extends BaseModel {
   public investiment: number
 
   @column()
-  public role: string
+  public role:
+    | 'CLIENT'
+    | 'SUPERVISOR_ASSISTANT'
+    | 'SUPERVISOR'
+    | 'MANAGER_ASSISTANT'
+    | 'MANAGER'
+    | 'ADMIN'
 
   @column()
   public rememberMeToken?: string
