@@ -11,31 +11,37 @@ export default class UsersController {
   public async store({ request, response }: HttpContextContract) {
     const data = request.all()
 
-    const verificarSeExistePatrocinador = await Database.from('users').where(
-      'my_code',
-      data.sponsorCode
-    )
+    if (data.role != 'ADMIN') {
+      const verificarSeExistePatrocinador = await Database.from('users').where(
+        'my_code',
+        data.sponsorCode
+      )
 
-    const pontosInvestidosPatrocinador = await Database.from('users')
-      .select('points')
-      .where('my_code', data.sponsorCode)
+      const pontosInvestidosPatrocinador = await Database.from('users')
+        .select('points')
+        .where('my_code', data.sponsorCode)
 
-    if (verificarSeExistePatrocinador.length) {
-      if (pontosInvestidosPatrocinador[0]?.points >= 2) {
-        data.myCode =
-          'F' +
-          data.cpf.substring(0, 3).toUpperCase() +
-          DateTime.local().month +
-          DateTime.local().year
-        return await User.create(data)
+      if (verificarSeExistePatrocinador.length) {
+        if (pontosInvestidosPatrocinador[0]?.points >= 2) {
+          data.myCode =
+            'F' +
+            data.cpf.substring(0, 3).toUpperCase() +
+            DateTime.local().month +
+            DateTime.local().year
+          return await User.create(data)
+        }
+        return response.status(403).json({
+          message: 'O patrocinador deve ter uma pontuação maior que 1 para poder indicar',
+        })
       }
       return response.status(403).json({
-        message: 'O patrocinador deve ter uma pontuação maior que 1 para poder indicar',
+        message: 'Não existe patrocinador com este código informado!',
       })
     }
-    return response.status(403).json({
-      message: 'Não existe patrocinador com este código informado!',
-    })
+
+    data.myCode =
+      'A' + data.cpf.substring(0, 3).toUpperCase() + DateTime.local().month + DateTime.local().year
+    return await User.create(data)
   }
 
   public async show({}: HttpContextContract) {}
