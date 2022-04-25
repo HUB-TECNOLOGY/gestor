@@ -8,24 +8,22 @@ export default class NetworksController {
     const user = await auth.authenticate()
     switch (qParams.status) {
       case 'DOCUMENT_PENDING':
-        return await Database.from('users')
+        return Database.from('users')
           .where('sponsor_code', user.myCode)
           .where('status', 'DOCUMENT_PENDING')
       case 'PIN_PENDING':
-        return await Database.from('users')
+        return Database.from('users')
           .where('sponsor_code', user.myCode)
           .where('status', 'PIN_PENDING')
       case 'SUCCESS':
-        return await Database.from('users')
-          .where('sponsor_code', user.myCode)
-          .where('status', 'SUCCESS')
+        return Database.from('users').where('sponsor_code', user.myCode).where('status', 'SUCCESS')
       default:
-        return await Database.from('users').where('sponsor_code', user.myCode)
+        return Database.from('users').where('sponsor_code', user.myCode)
     }
   }
 
   public async show({ auth }: HttpContextContract) {
     const user = await auth.authenticate()
-    return await Database.from('users').where('role', 'MANAGER').where('sponsor_code', user.myCode)
+    return Database.from('users').where('role', 'MANAGER').where('sponsor_code', user.myCode)
   }
 }
