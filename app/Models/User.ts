@@ -75,4 +75,16 @@ export default class User extends BaseModel {
       user.password = await Hash.make(user.password)
     }
   }
+
+  @beforeSave()
+  public static async generateCode(user: User) {
+    if (user) {
+      user.myCode = `F${
+        DateTime.local().second +
+        user.cpf.substring(0, 3).toUpperCase() +
+        DateTime.local().month +
+        DateTime.local().day
+      }`
+    }
+  }
 }

@@ -2,13 +2,12 @@ import Route from '@ioc:Adonis/Core/Route'
 
 Route.group(() => {
   Route.group(() => {
-    Route.post('login', 'AuthController.store')
-    Route.post('logout', 'AuthController.destroy')
-  }).prefix('auth')
-
-  Route.resource('users', 'UsersController')
+    Route.post('/login', 'AuthController.store')
+    Route.post('/logout', 'AuthController.destroy')
+  }).prefix('/auth')
+  Route.post('/users', 'UsersController.store')
   Route.group(() => {
-    Route.resource('network', 'NetworksController').apiOnly()
-    Route.get('network/my-network', 'NetworksController.show')
+    Route.resource('network/my-network', 'NetworksController').apiOnly()
+    Route.get('network/my-network/managers', 'NetworksController.show')
   }).middleware('auth')
 }).prefix('/api/v1')

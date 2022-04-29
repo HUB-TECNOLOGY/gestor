@@ -1,7 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
-import Database from '@ioc:Adonis/Lucid/Database'
-import { DateTime } from 'luxon'
+import CreateUserValidator from 'App/Validators/CreateUserValidator'
+import BadRequestException from 'App/Exceptions/BadRequestException'
 
 export default class UsersController {
   public async index({}: HttpContextContract) {
@@ -9,39 +9,22 @@ export default class UsersController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    const data = request.all()
-
-    if (data.role != 'ADMIN') {
-      const verificarSeExistePatrocinador = await Database.from('users').where(
-        'my_code',
-        data.sponsorCode
-      )
-
-      const pontosInvestidosPatrocinador = await Database.from('users')
-        .select('points')
-        .where('my_code', data.sponsorCode)
-
-      if (verificarSeExistePatrocinador.length) {
-        if (pontosInvestidosPatrocinador[0]?.points >= 2) {
-          data.myCode =
-            'F' +
-            data.cpf.substring(0, 3).toUpperCase() +
-            DateTime.local().month +
-            DateTime.local().year
-          return await User.create(data)
-        }
-        return response.status(403).json({
-          message: 'O patrocinador deve ter uma pontuação maior que 1 para poder indicar',
-        })
-      }
-      return response.status(403).json({
-        message: 'Não existe patrocinador com este código informado!',
-      })
+    const data = await request.validate(CreateUserValidator)
+    switch (data.role) {
+      case 'ADMIN':
+        return response.created(await User.create(data))
+      default:
+        const sponsor = await User.findBy('my_code', data.sponsorCode)
+        const { points } = await User.findByOrFail('my_code', data.sponsorCode)
+        if (!sponsor)
+          throw new BadRequestException('Não existe patrocinador com este código informado!', 409)
+        if (points < 2)
+          throw new BadRequestException(
+            'O patrocinador deve ter uma pontuação maior que 1 para poder indicar',
+            409
+          )
+        return response.created(await User.create(data))
     }
-
-    data.myCode =
-      'A' + data.cpf.substring(0, 3).toUpperCase() + DateTime.local().month + DateTime.local().year
-    return await User.create(data)
   }
 
   public async show({}: HttpContextContract) {}
