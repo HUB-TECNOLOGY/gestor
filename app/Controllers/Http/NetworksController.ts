@@ -13,7 +13,7 @@ export default class NetworksController {
       case 'SUCCESS':
         return User.query().where('sponsor_code', user.myCode).where('status', 'SUCCESS')
       default:
-        return User.findBy('sponsor_code', user.myCode)
+        return User.query().where('sponsor_code', user.myCode)
     }
   }
 
