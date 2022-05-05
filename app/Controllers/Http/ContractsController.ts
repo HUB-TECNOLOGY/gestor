@@ -1,11 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Network from 'App/Models/Network'
-export default class NetworksController {
-  public async index({}: HttpContextContract) {
-    await Network.findBy()
-  }
 
-  public async create({}: HttpContextContract) {}
+export default class ContractsController {
+  public async index({}: HttpContextContract) {}
 
   public async store({}: HttpContextContract) {}
 

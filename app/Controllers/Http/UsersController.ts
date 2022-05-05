@@ -2,17 +2,20 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import CreateUserValidator from 'App/Validators/CreateUserValidator'
 import BadRequestException from 'App/Exceptions/BadRequestException'
+import Event from '@ioc:Adonis/Core/Event'
 
 export default class UsersController {
   public async index({}: HttpContextContract) {
-    return await User.all()
+    return await User.query().preload('network')
   }
 
   public async store({ request, response }: HttpContextContract) {
     const data = await request.validate(CreateUserValidator)
     switch (data.role) {
       case 'ADMIN':
-        return response.created(await User.create(data))
+        const user1 = await User.create(data)
+        Event.emit('new:user', user1)
+        return response.created(user1)
       default:
         const sponsor = await User.findBy('my_code', data.sponsorCode)
         const { points } = await User.findByOrFail('my_code', data.sponsorCode)
@@ -23,13 +26,22 @@ export default class UsersController {
             'O patrocinador deve ter uma pontuação maior que 1 para poder indicar',
             409
           )
-        return response.created(await User.create(data))
+        const user = await User.create(data)
+        Event.emit('new:user', user)
+        return response.created(user)
     }
   }
 
   public async show({}: HttpContextContract) {}
 
-  public async update({}: HttpContextContract) {}
+  public async update({ response, params }: HttpContextContract) {
+    const user = await User.findByOrFail('id', params.id)
+    if (!user) throw new BadRequestException('Não existe usuário com este código informado!', 409)
+    user.merge({
+      status: 'ACTIVE',
+    })
+    return response.created(user)
+  }
 
   public async destroy({}: HttpContextContract) {}
 }
