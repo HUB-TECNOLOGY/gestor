@@ -35,7 +35,7 @@ export default class UsersController {
   public async show({}: HttpContextContract) {}
 
   public async update({ response, params }: HttpContextContract) {
-    const user = await User.findByOrFail('id', params.id)
+    const user = await User.findBy('id', params.id)
     if (!user) throw new BadRequestException('Não existe usuário com este código informado!', 409)
     user.merge({
       status: 'ACTIVE',
