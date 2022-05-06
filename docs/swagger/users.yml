@@ -1,0 +1,14 @@
+/api/v1/users:
+  post:
+    tags:
+      - Users
+    description: Create a new user.
+    parameters:
+      - name: body
+        in:  body
+        required: true
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Success

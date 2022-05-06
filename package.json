@@ -7,7 +7,8 @@
     "build": "node ace build --production",
     "start": "node server.js",
     "lint": "eslint . --ext=.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "postbuild": "node ace swagger:generate && cp -a docs/ build/docs"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +57,7 @@
     "@adonisjs/core": "^5.7.5",
     "@adonisjs/lucid": "^10.0.0",
     "@adonisjs/repl": "^3.1.10",
+    "adonis5-swagger": "^1.4.1",
     "luxon": "^2.3.2",
     "pg": "^8.7.3",
     "phc-argon2": "^1.1.3",
