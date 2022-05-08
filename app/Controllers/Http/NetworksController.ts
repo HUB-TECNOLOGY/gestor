@@ -1,8 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Network from 'App/Models/Network'
 export default class NetworksController {
-  public async index({}: HttpContextContract) {
-    await Network.findBy()
+  public async index({ auth }: HttpContextContract) {
+    await Network.findBy('sponsor_code', auth.user?.myCode)
   }
 
   public async create({}: HttpContextContract) {}
