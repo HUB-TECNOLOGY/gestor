@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
-import Module from 'App/Models/Module'
 
 export default class Network extends BaseModel {
   @column({ isPrimary: true })
