@@ -1,7 +1,16 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  beforeSave,
+  BelongsTo,
+  belongsTo,
+  column,
+  hasOne,
+  HasOne,
+} from '@ioc:Adonis/Lucid/Orm'
 import Network from 'App/Models/Network'
+import Profile from 'App/Models/Profile'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -53,16 +62,13 @@ export default class User extends BaseModel {
   public investiment: number
 
   @hasOne(() => Network)
-  public network: HasOne<typeof Network>
+  public my_network: HasOne<typeof Network>
 
   @column()
-  public role:
-    | 'CLIENT'
-    | 'SUPERVISOR_ASSISTANT'
-    | 'SUPERVISOR'
-    | 'MANAGER_ASSISTANT'
-    | 'MANAGER'
-    | 'ADMIN'
+  public profileId: number
+
+  @belongsTo(() => Profile)
+  public profile: BelongsTo<typeof Profile>
 
   @column()
   public rememberMeToken?: string

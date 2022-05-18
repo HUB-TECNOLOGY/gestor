@@ -22,16 +22,11 @@ export default class UsersSchema extends BaseSchema {
       table.integer('points').notNullable()
       table.float('investiment').notNullable()
       table
-        .enu('role', [
-          'CLIENT',
-          'SUPERVISOR_ASSISTANT',
-          'SUPERVISOR',
-          'MANAGER_ASSISTANT',
-          'MANAGER',
-          'ADMIN',
-        ])
-        .defaultTo('CLIENT')
-
+        .integer('profile_id')
+        .unsigned()
+        .references('id')
+        .inTable('profiles')
+        .onDelete('CASCADE')
       table.string('remember_me_token').nullable()
       table.timestamps(true)
     })

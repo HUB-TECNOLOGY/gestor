@@ -1,6 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
-import CreateUserValidator from 'App/Validators/CreateUserValidator'
+import StoreUserValidator from 'App/Validators/StoreUserValidator'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import Event from '@ioc:Adonis/Core/Event'
 
@@ -10,9 +10,9 @@ export default class UsersController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    const data = await request.validate(CreateUserValidator)
-    switch (data.role) {
-      case 'ADMIN':
+    const data = await request.validate(StoreUserValidator)
+    switch (data.profileId) {
+      case 1:
         const user1 = await User.create(data)
         Event.emit('new:user', user1)
         return response.created(user1)
