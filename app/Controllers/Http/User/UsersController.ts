@@ -6,7 +6,7 @@ import Event from '@ioc:Adonis/Core/Event'
 
 export default class UsersController {
   public async index({}: HttpContextContract) {
-    return await User.query().preload('network')
+    return await User.query().preload('my_network')
   }
 
   public async store({ request, response }: HttpContextContract) {
