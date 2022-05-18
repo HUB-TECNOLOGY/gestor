@@ -5,7 +5,6 @@
     "@adonisjs/core/build/commands/index.js",
     "@adonisjs/repl/build/commands",
     "@adonisjs/lucid/build/commands",
-    "adonis5-swagger/build/commands",
     "@adonisjs/mail/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
@@ -30,7 +29,6 @@
     "@adonisjs/core",
     "@adonisjs/lucid",
     "@adonisjs/auth",
-    "adonis5-swagger",
     "@adonisjs/mail"
   ],
   "aceProviders": [
