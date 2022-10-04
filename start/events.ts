@@ -8,7 +8,6 @@
 |
 */
 import Event from '@ioc:Adonis/Core/Event'
-import Network from 'App/Models/Network'
 import Mail from '@ioc:Adonis/Addons/Mail'
 Event.on('new:user', async (user) => {
   console.log(user.email)
@@ -21,8 +20,4 @@ Event.on('new:user', async (user) => {
       oTags: ['signup'],
     }
   )
-  await Network.create({
-    sponsorCode: user.myCode,
-    userId: user.id,
-  })
 })

@@ -1,19 +1,20 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class Modules extends BaseSchema {
-  protected tableName = 'modules'
+export default class Accounts extends BaseSchema {
+  protected tableName = 'accounts'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('name').unique()
+      table.decimal('balance').notNullable().defaultTo(0)
+      table.decimal('post_balance').defaultTo(0)
       table
-
-        .integer('profile_id')
+        .integer('user_id')
         .unsigned()
         .references('id')
-        .inTable('profiles')
+        .inTable('users')
         .onDelete('CASCADE')
+        .unique()
       table.timestamps(true)
     })
   }

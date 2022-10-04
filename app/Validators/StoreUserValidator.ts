@@ -4,46 +4,35 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 export default class StoreUserValidator {
   constructor(protected ctx: HttpContextContract) {}
 
-  /*
-   * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
-   *
-   * For example:
-   * 1. The username must be of data type string. But then also, it should
-   *    not contain special characters or numbers.
-   *    ```
-   *     schema.string({}, [ rules.alpha() ])
-   *    ```
-   *
-   * 2. The email must be of data type string, formatted as a valid
-   *    email. But also, not used by any other user.
-   *    ```
-   *     schema.string({}, [
-   *       rules.email(),
-   *       rules.unique({ table: 'users', column: 'email' }),
-   *     ])
-   *    ```
-   */
   public schema = schema.create({
     name: schema.string({}),
-    cpf: schema.string({}, [rules.unique({ table: 'users', column: 'cpf' })]),
     birthdate: schema.date({}),
-    email: schema.string({}, [rules.email()]),
-    password: schema.string({}, [
-      rules.unique({ table: 'users', column: 'email' }),
-      rules.minLength(6),
-      rules.maxLength(8),
-      rules.confirmed(),
-    ]),
+    document: schema.string({}, [rules.unique({ table: 'users', column: 'document' })]),
+    document_type: schema.string({}),
+    document_issuer: schema.string({}),
+    cpf: schema.string({}, [rules.unique({ table: 'users', column: 'cpf' })]),
+    mother_name: schema.string({}),
     address: schema.string({}),
     zipCode: schema.string({}),
     city: schema.string({}),
     province: schema.string({}),
     country: schema.string({}),
-    myCode: schema.string.optional({}, [rules.unique({ table: 'users', column: 'my_code' })]),
-    sponsorCode: schema.string({}),
-    points: schema.number(),
-    investiment: schema.number(),
-    profileId: schema.number(),
+    email: schema.string({}, [rules.email(), rules.unique({ table: 'users', column: 'email' })]),
+    password: schema.string({}, [rules.minLength(6), rules.maxLength(8), rules.confirmed()]),
+    username: schema.string({}, [rules.unique({ table: 'users', column: 'username' })]),
+    phone: schema.string(),
+    landline: schema.string(),
+    bank: schema.string(),
+    agency: schema.string(),
+    account: schema.string({}, [rules.unique({ table: 'users', column: 'account' })]),
+    accountType: schema.string(),
+    pixKey: schema.string({}, [rules.unique({ table: 'users', column: 'pix_key' })]),
+    pixKeyType: schema.string(),
+    profession: schema.string(),
+    maritalStatus: schema.string(),
+    refId: schema.number.optional(),
+    profileId: schema.number.optional(),
+    referral: schema.string.optional(),
   })
 
   /**
@@ -57,5 +46,7 @@ export default class StoreUserValidator {
    * }
    *
    */
-  public messages = {}
+  public messages = {
+    'user.referral.required': 'O patrocinador é obrigatório',
+  }
 }

@@ -1,25 +1,22 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, BelongsTo, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
 
-export default class Network extends BaseModel {
+export default class Account extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public sponsorCode: string
-
-  @column()
-  public status: boolean
+  public balance: number
 
   @column()
   public userId: number
 
-  @hasMany(() => User)
-  public affiliates: HasMany<typeof User>
+  @column()
+  public postBalance: number
 
   @belongsTo(() => User)
-  public sponsor: BelongsTo<typeof User>
+  public user: BelongsTo<typeof User>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

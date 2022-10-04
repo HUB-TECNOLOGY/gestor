@@ -1,16 +1,8 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import {
-  BaseModel,
-  beforeSave,
-  BelongsTo,
-  belongsTo,
-  column,
-  hasOne,
-  HasOne,
-} from '@ioc:Adonis/Lucid/Orm'
-import Network from 'App/Models/Network'
+import { afterSave, BaseModel, beforeSave, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import Profile from 'App/Models/Profile'
+import Account from 'App/Models/Account'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -20,16 +12,22 @@ export default class User extends BaseModel {
   public name: string
 
   @column()
-  public cpf: string
-
-  @column()
   public birthdate: DateTime
 
   @column()
-  public email: string
+  public document: string
 
-  @column({ serializeAs: null })
-  public password: string
+  @column()
+  public documentType: string
+
+  @column()
+  public documentIssuer: string
+
+  @column()
+  public cpf: string
+
+  @column()
+  public motherName: string
 
   @column()
   public address: string
@@ -47,28 +45,67 @@ export default class User extends BaseModel {
   public country: string
 
   @column()
-  public myCode: string
+  public email: string
+
+  @column({ serializeAs: null })
+  public password: string
 
   @column()
-  public sponsorCode: string
+  public username: string
 
   @column()
-  public status: string
+  public phone: string
 
   @column()
-  public points: number
+  public landline: string
 
   @column()
-  public investiment: number
+  public bank: string
 
-  @hasOne(() => Network)
-  public my_network: HasOne<typeof Network>
+  @column()
+  public agency: string
+
+  @column()
+  public accountType: string
+
+  @column()
+  public pixKey: string
+
+  @column()
+  public pixKeyType: string
+
+  @column()
+  public profession: string
+
+  @column()
+  public maritalStatus: string
 
   @column()
   public profileId: number
 
-  @belongsTo(() => Profile)
-  public profile: BelongsTo<typeof Profile>
+  @hasOne(() => Profile)
+  public profile: HasOne<typeof Profile>
+
+  @column()
+  public refId: number
+
+  @column()
+  public referral: string
+
+  @hasOne(() => User)
+  public referralName: HasOne<typeof User>
+
+  @column()
+  public account: string
+
+  @column()
+  public accountId: number
+
+  @hasOne(() => Account)
+  public accountInternal: HasOne<typeof Account>
+
+  @column()
+  public status: string
 
   @column()
   public rememberMeToken?: string
@@ -86,15 +123,12 @@ export default class User extends BaseModel {
     }
   }
 
-  @beforeSave()
-  public static async generateCode(user: User) {
+  @afterSave()
+  public static async createAccount(user: User) {
     if (user) {
-      user.myCode = `F${
-        DateTime.local().second +
-        user.cpf.substring(0, 3).toUpperCase() +
-        DateTime.local().month +
-        DateTime.local().day
-      }`
+      await Account.create({
+        userId: user.id,
+      })
     }
   }
 }

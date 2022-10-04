@@ -1,15 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class ManagerAssistantsController {
+export default class BonusController {
   public async index({}: HttpContextContract) {}
-
-  public async create({}: HttpContextContract) {}
 
   public async store({}: HttpContextContract) {}
 
   public async show({}: HttpContextContract) {}
-
-  public async edit({}: HttpContextContract) {}
 
   public async update({}: HttpContextContract) {}
 

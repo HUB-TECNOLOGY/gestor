@@ -5,12 +5,7 @@ import { StoreValidator } from 'App/Validators/Auth'
 export default class AuthController {
   public async store({ request, response, auth }: HttpContextContract) {
     const { email, password } = await request.validate(StoreValidator)
-    const user = await User.query()
-      .where('email', email)
-      .preload('my_network')
-      .preload('profile', (module) => {
-        module.preload('modules')
-      })
+    const user = await User.query().where('email', email).preload('accountInternal')
 
     const token = await auth.use('api').attempt(email, password, {
       expiresIn: '2hours',
