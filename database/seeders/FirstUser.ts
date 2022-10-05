@@ -1,5 +1,5 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import User from 'App/Models/user'
+import User from 'App/Models/User'
 import { DateTime } from 'luxon'
 export default class FirstUserSeeder extends BaseSeeder {
   public async run() {
