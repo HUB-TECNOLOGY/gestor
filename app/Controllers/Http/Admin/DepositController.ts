@@ -1,5 +1,4 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Investment from 'App/Models/Investment'
 import Deposit from 'App/Models/Deposit'
 import Transaction from 'App/Models/Transaction'
 import Account from 'App/Models/Account'
@@ -19,6 +18,8 @@ export default class DepositController {
       status: 'APROVADO',
     })
     await deposit?.save()
+    // @ts-ignore
+    const amount: number | undefined = deposit.amount
     await Transaction.create({
       userId: deposit?.userId,
       amount: deposit?.amount,
@@ -26,7 +27,7 @@ export default class DepositController {
       details: `Depósito de ${Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',
-      }).format(deposit?.amount)}`,
+      }).format(amount)}`,
       remark: 'deposit',
       postBalance: 0,
       charge: 0,

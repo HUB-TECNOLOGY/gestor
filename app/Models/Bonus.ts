@@ -19,6 +19,9 @@ export default class Bonus extends BaseModel {
   public paymentDate: string
 
   @column()
+  public paidOut: boolean
+
+  @column()
   public type: string
 
   @belongsTo(() => Investment)
