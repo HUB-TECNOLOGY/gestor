@@ -1,8 +1,16 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { afterSave, BaseModel, beforeSave, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  beforeSave,
+  BelongsTo,
+  belongsTo,
+  column,
+  hasOne,
+  HasOne,
+} from '@ioc:Adonis/Lucid/Orm'
 import Profile from 'App/Models/Profile'
-import Account from 'App/Models/Account'
+import { CherryPick } from '@ioc:Adonis/Lucid/Model'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -83,29 +91,25 @@ export default class User extends BaseModel {
   @column()
   public profileId: number
 
-  @hasOne(() => Profile)
-  public profile: HasOne<typeof Profile>
+  @belongsTo(() => Profile)
+  public profile: BelongsTo<typeof Profile>
 
   @column()
   public refId: number
 
   @column()
-  public referral: string
+  public parentId: number
 
-  @hasOne(() => User)
-  public referralName: HasOne<typeof User>
+  @hasOne(() => User, { foreignKey: 'id' })
+  public referral: HasOne<typeof User>
 
   @column()
   public account: string
 
   @column()
-  public accountId: number
-
-  @hasOne(() => Account)
-  public accountInternal: HasOne<typeof Account>
-
-  @column()
   public status: string
+  @column()
+  public balance: number
 
   @column()
   public rememberMeToken?: string
@@ -123,12 +127,22 @@ export default class User extends BaseModel {
     }
   }
 
-  @afterSave()
-  public static async createAccount(user: User) {
-    if (user) {
-      await Account.create({
-        userId: user.id,
-      })
+  public serialize(cherryPick?: CherryPick) {
+    return {
+      ...this.serializeAttributes(cherryPick?.fields, false),
+      ...this.serializeComputed(cherryPick?.fields),
+      ...this.serializeRelations(
+        {
+          referral: {
+            fields: ['id', 'name', 'username'],
+          },
+
+          profile: {
+            fields: ['title'],
+          },
+        },
+        false
+      ),
     }
   }
 }

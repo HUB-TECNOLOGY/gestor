@@ -24,6 +24,9 @@ export default class Investment extends BaseModel {
   public bonuses: HasMany<typeof Bonus>
 
   @column()
+  public status: boolean
+
+  @column()
   public dueDate: string
 
   @column.dateTime({ autoCreate: true, serializeAs: null })
@@ -39,7 +42,7 @@ export default class Investment extends BaseModel {
       ...this.serializeRelations(
         {
           bonuses: {
-            fields: ['id', 'amount', 'payment_date', 'type'],
+            fields: ['id', 'amount', 'payment_date', 'type', 'invest_id'],
           },
         },
         false

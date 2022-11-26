@@ -5,9 +5,9 @@ import Withdrawals from 'App/Models/Withdraw'
 export default class WithdrawalsController {
   public async index({}: HttpContextContract) {}
 
-  public async store({ request }: HttpContextContract) {
+  public async store({ request, auth }: HttpContextContract) {
     const data = await request.validate(StoreWithDrawlsValidator)
-
+    data.userId = auth?.user?.id
     return await Withdrawals.create(data)
   }
 

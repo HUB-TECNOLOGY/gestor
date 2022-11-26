@@ -18,7 +18,9 @@ export default class RegisterController {
     //     409
     //   )
     data.refId = referral?.id
+    data.parentId = referral.parentId
     data.profileId = 1
+
     const user = await User.create(data)
     // Event.emit('new:user', user)
     return response.created(user)

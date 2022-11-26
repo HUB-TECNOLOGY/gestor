@@ -5,6 +5,8 @@ import Account from 'App/Models/Account'
 import Withdrawals from 'App/Models/Withdraw'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Bonus from 'App/Models/Bonus'
+import User from 'App/Models/User'
+import { createTransaction, formatCurrency } from 'App/Handlers'
 
 export default class WithdrawalsController {
   public async index({}: HttpContextContract) {}
@@ -40,33 +42,18 @@ export default class WithdrawalsController {
         await withdraw?.save()
 
         // busca conta para alterar o valor e criar a transacao
-        const account = await Account.find(withdraw?.userId)
-        account?.merge({
-          balance: Number(account?.balance) + Number(withdraw?.amount),
-          postBalance: account?.balance,
+        const user = await User.find(withdraw?.userId)
+        user?.merge({
+          balance: (user.balance -= Number(withdraw.amount)),
         })
-        await account?.save()
-        // @ts-ignore
-        const amount: number | undefined = withdraw.amount
-
-        await Transaction.create({
-          userId: withdraw?.userId,
-          amount: withdraw?.amount,
-          transactionType: '-',
-          details: `Saque de ${Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-          }).format(amount)}`,
-          remark: 'withdrawal_bonus_invest',
-          postBalance: 0,
-          charge: 0,
-        })
-
-        account?.merge({
-          balance: Number(account?.balance) - Number(withdraw?.amount),
-          postBalance: account?.balance,
-        })
-        await account?.save()
+        await user?.save()
+        await createTransaction(
+          withdraw?.userId,
+          withdraw.amount,
+          '-',
+          `Saque de ${formatCurrency(withdraw.amount)}`,
+          'bonus_invest_withdraw'
+        )
 
         const bonus = await Bonus.findBy('investment_id', withdraw?.investId)
         bonus?.merge({

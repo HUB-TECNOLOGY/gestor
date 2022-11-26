@@ -31,6 +31,7 @@ export default class StoreUserValidator {
     profession: schema.string(),
     maritalStatus: schema.string(),
     refId: schema.number.optional(),
+    parentId: schema.number.optional(),
     profileId: schema.number.optional(),
     referral: schema.string.optional(),
   })

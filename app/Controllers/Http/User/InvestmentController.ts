@@ -1,46 +1,54 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Investment from 'App/Models/Investment'
 import StoreInvestmentValidator from 'App/Validators/StoreInvestmentValidator'
-import Transaction from 'App/Models/Transaction'
 import { DateTime } from 'luxon'
 import Bonus from 'App/Models/Bonus'
-import Account from 'App/Models/Account'
-import BadRequestException from 'App/Exceptions/BadRequestException'
+import Database from '@ioc:Adonis/Lucid/Database'
+import { createTransaction, formatCurrency, referralCommission } from 'App/Handlers'
+import User from 'App/Models/User'
 
 export default class InvestmentController {
   public async index({ auth }: HttpContextContract) {
-    // @ts-ignore
     return Investment.query().where('user_id', auth.user?.id).preload('bonuses')
   }
 
   public async store({ request, response, auth }: HttpContextContract) {
-    const account = await Account.findBy('user_id', auth.user?.id)
-    const balance = account?.balance
-    console.log(balance)
-    // @ts-ignore
-    if (account.balance > 0) {
+    const trx = await Database.transaction()
+
+    try {
+      const investment = await Investment.query()
+        .where('user_id', auth?.user?.id)
+        .where('status', true)
+        .first()
+      if (investment) {
+        return response.status(409).json({
+          message: 'Você não pode aplicar com um investimento ativo!',
+        })
+      }
+
       const data = await request.validate(StoreInvestmentValidator)
       data.userId = auth.user?.id
+      data.status = true
+      const user = await User.find(auth?.user?.id)
+      if (user?.balance <= 0) {
+        return response.status(409).json({
+          message: 'Você não saldo suficiente para investir!',
+        })
+      }
+      //Cria Solicitaçào de investiment
       const invest = await Investment.create(data)
-      await Transaction.create({
-        userId: auth.user?.id,
-        amount: data.invest,
-        transactionType: '+',
-        details: `Investimento de ${Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(data.invest)}`,
-        remark: 'invest',
-        postBalance: 0,
-        charge: 0,
+      await createTransaction(
+        auth?.user?.id,
+        data.invest,
+        '+',
+        `Investimento de ${formatCurrency(data.invest)}`,
+        'invest'
+      )
+
+      user?.merge({
+        balance: (user.balance -= Number(data.invest)),
       })
-      const prevAmount = Number(account?.balance) - Number(invest?.invest)
-      console.log(prevAmount)
-      account?.merge({
-        balance: prevAmount,
-        postBalance: account?.balance,
-      })
-      await account?.save()
+      await user?.save()
       for (let i = 0; i < 3; i++) {
         await Bonus.create({
           investmentId: invest.id,
@@ -50,18 +58,17 @@ export default class InvestmentController {
           type: 'bonus_invest',
         })
       }
+      await referralCommission(auth?.user?.id, data.invest)
       return response.created(invest)
-    } else {
-      throw new BadRequestException('Você não tem saldo suficiente para investir!', 409)
+    } catch (error) {
+      console.log('[ERROR:]', error)
+      await trx.rollback()
     }
-    // const investm = await Investment.findBy('user_id', auth.user?.id)
-    // @ts-ignore
-    // console.log(investm?.dueDate < DateTime.local().toString())
-    // if (investm?.dueDate < DateTime.local().toString())
-    //   throw new BadRequestException('Você não pode aplicar com um investimento ativo!', 409)
   }
 
-  public async show({}: HttpContextContract) {}
+  public async show({ params }: HttpContextContract) {
+    return await Bonus.query().where('investment_id', params.id).orderBy('payment_date', 'asc')
+  }
 
   public async update({}: HttpContextContract) {}
 

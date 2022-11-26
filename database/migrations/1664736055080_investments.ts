@@ -8,7 +8,6 @@ export default class Investiments extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.decimal('invest').notNullable()
-      table.string('percentage').defaultTo('100')
       table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table
         .dateTime('due_date')

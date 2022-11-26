@@ -3,7 +3,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class StoreWithDrawlsValidator {
   public schema = schema.create({
-    userId: schema.number(),
+    userId: schema.number.optional(),
     amount: schema.number(),
     investId: schema.number(),
     detail: schema.string.optional(),

@@ -8,6 +8,7 @@ export default class StoreInvestmentValidator {
     invest: schema.number(),
     percentage: schema.number.optional(),
     userId: schema.number.optional(),
+    status: schema.boolean.optional(),
   })
 
   /**
