@@ -16,6 +16,7 @@ export default class InvestmentController {
     const trx = await Database.transaction()
 
     try {
+      // @ts-ignore
       const investment = await Investment.query()
         .where('user_id', auth?.user?.id)
         .where('status', true)

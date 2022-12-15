@@ -1,7 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequestException from 'App/Exceptions/BadRequestException'
-import Transaction from 'App/Models/Transaction'
-import Account from 'App/Models/Account'
 import Withdrawals from 'App/Models/Withdraw'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Bonus from 'App/Models/Bonus'
